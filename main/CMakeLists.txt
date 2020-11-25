@@ -18,5 +18,5 @@ target_include_directories(
 #target_link_libraries(${PROJECT_NAME} PRIVATE ${InferenceEngine_LIBRARIES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-     ${PROJECT_SOURCE_DIR}/../ovms_plugin_ov/build/libovms_plugin_ov.so
+     ${PROJECT_SOURCE_DIR}/../ovms_plugin_ov/libovms_plugin_ov.so
 )

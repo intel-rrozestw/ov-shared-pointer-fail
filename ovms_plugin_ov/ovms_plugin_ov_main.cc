@@ -16,7 +16,8 @@ OVMS_EXPORT int ovms_plugin_ov_read_network(const char* file_path) {
     InferenceEngine::Core engine;
     InferenceEngine::CNNNetwork network;
     network = engine.ReadNetwork("/model/squeezenet1.1.xml");
-    engine.LoadNetwork(network, "CPU");
+    auto net_sptr = engine.LoadNetwork(network, "CPU");
+    std::cout << &net_sptr << std::endl;
 #endif
     std::cout << "ovms_plugin_ov_read_network - SUCCESS" << std::endl;
     return 0;
