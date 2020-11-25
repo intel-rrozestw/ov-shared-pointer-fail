@@ -3,8 +3,10 @@ FROM centos:7
 ENV http_proxy=http://proxy-chain.intel.com:911
 ENV https_proxy=http://proxy-chain.intel.com:912
 
-RUN yum install -y centos-release-scl && yum update -y && yum install -y \
-            cmake \
+#RUN yum install -y centos-release-scl && yum update -y && yum install -y \
+RUN yum install -d6 -y epel-release centos-release-scl && yum update -d6 -y && yum install -d6 -y \
+            cmake3 \
+            gcc gcc-c++ gdb valgrind \
             devtoolset-8-gcc* \
             make \
             python3 \
@@ -13,7 +15,9 @@ RUN yum install -y centos-release-scl && yum update -y && yum install -y \
             which \
             && yum clean all
 
-SHELL [ "/usr/bin/scl", "enable", "devtoolset-8" ]
+#SHELL [ "/usr/bin/scl", "enable", "devtoolset-8" ]
+
+
 
 # Set up bazel 
 ENV BAZEL_VERSION 2.0.0
@@ -34,15 +38,20 @@ RUN wget $DLDT_PACKAGE_URL && \
 
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/:/opt/intel/openvino/deployment_tools/ngraph/lib/:/opt/intel/openvino/inference_engine/external/tbb/lib/
 
-# copy project files
+WORKDIR /ovms_plugin_ov
+COPY ovms_plugin_ov/ /ovms_plugin_ov/
+ENV TBB_DIR=/opt/intel/openvino/inference_engine/external/tbb/cmake/
+RUN source /opt/intel/openvino/bin/setupvars.sh && cmake3 . && make
+
 WORKDIR /main
 COPY main/ /main/
 COPY model/ /model/
 
-# build with cmake
-ENV TBB_DIR=/opt/intel/openvino/inference_engine/external/tbb/cmake/
-RUN source /opt/intel/openvino/bin/setupvars.sh && cmake . && make
-ARG REBUILD_FROM_HERE=
+SHELL [ "/usr/bin/scl", "enable", "devtoolset-8" ]
+ENV CC=/opt/rh/devtoolset-8/root/bin/gcc
+ENV CXX=/opt/rh/devtoolset-8/root/bin/g++
+
+RUN cmake3 . && make
 
 # run
 RUN /main/m
