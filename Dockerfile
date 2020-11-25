@@ -54,4 +54,6 @@ ENV CXX=/opt/rh/devtoolset-8/root/bin/g++
 RUN cmake3 . && make
 
 # run
+RUN cd /ovms_plugin_ov/ && python3 test.py
 RUN /main/m
+
